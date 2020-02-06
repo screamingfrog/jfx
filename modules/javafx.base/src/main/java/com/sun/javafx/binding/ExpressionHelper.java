@@ -210,8 +210,8 @@ public abstract class ExpressionHelper<T> extends ExpressionHelperBase {
 
         private Generic(ObservableValue<T> observable, InvalidationListener invalidationListener, ChangeListener<? super T> changeListener) {
             super(observable);
-            this.invalidationListeners.add(invalidationListener);            
-            this.changeListeners.add(changeListener);            
+            this.invalidationListeners.add(invalidationListener);
+            this.changeListeners.add(changeListener);
             this.currentValue = observable.getValue();
         }
 
@@ -248,7 +248,7 @@ public abstract class ExpressionHelper<T> extends ExpressionHelperBase {
                 }
             }
             changeListeners.add(listener);
-            
+
             if (changeListeners.size() == 1) {
                 currentValue = observable.getValue();
             }
