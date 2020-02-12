@@ -34,6 +34,8 @@ import com.sun.javafx.scene.traversal.Algorithm;
 import com.sun.javafx.scene.traversal.Direction;
 import com.sun.javafx.scene.traversal.ParentTraversalEngine;
 import com.sun.javafx.scene.traversal.TraversalContext;
+import com.sun.javafx.tk.Toolkit;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.InvalidationListener;
@@ -1267,6 +1269,7 @@ public class VirtualFlow<T extends IndexedCell> extends Region {
         lastPosition = getPosition();
 
         cleanPile();
+        Toolkit.getToolkit().firePulse();
     }
 
     /** {@inheritDoc} */
