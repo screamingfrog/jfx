@@ -1225,7 +1225,7 @@ public class VirtualFlow<T extends IndexedCell> extends Region {
                 setPosition(1.0f);
 //                setItemCount(cellCount);
             } else if (firstCell != null) {
-                double firstCellOffset = getCellPosition(firstCell);
+                double firstCellOffset = getCellPosition(firstCell) - 0.25;
                 int firstCellIndex = getCellIndex(firstCell);
 //                setItemCount(cellCount);
                 adjustPositionToIndex(firstCellIndex);
