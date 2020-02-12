@@ -45,7 +45,7 @@ MAC.libDest = "lib"
  * In extreme cases you can provide your own properties in your home dir to
  * override these settings or pass them on the command line.
  */
-def prefSdkVersion = "10.11"
+def prefSdkVersion = "10.15"
 def defaultSdkPath = "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${prefSdkVersion}.sdk";
 
 // Set the minimum API version that we require (developers do not need to override this)
@@ -102,6 +102,7 @@ if (!file(MACOSX_SDK_PATH).isDirectory()) {
 
 // NOTE: There is no space between -iframework and the specified path
 def commonParams = [
+        "-DOBJC_OLD_DISPATCH_PROTOTYPES",
         "-mmacosx-version-min=$MACOSX_MIN_VERSION",
         "-isysroot", "$MACOSX_SDK_PATH",
         "-iframework$MACOSX_SDK_PATH/System/Library/Frameworks",
