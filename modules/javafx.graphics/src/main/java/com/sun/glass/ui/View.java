@@ -1112,12 +1112,14 @@ public abstract class View {
      */
     long getAccessible() {
         Application.checkEventThread();
-        checkNotClosed();
-        if (accessible) {
-            Accessible acc = eventHandler.getSceneAccessible();
-            if (acc != null) {
-                acc.setView(this);
-                return acc.getNativeAccessible();
+        if (this.ptr != 0L) {
+            checkNotClosed();
+            if (accessible) {
+                Accessible acc = eventHandler.getSceneAccessible();
+                if (acc != null) {
+                    acc.setView(this);
+                    return acc.getNativeAccessible();
+                }
             }
         }
         return 0L;
