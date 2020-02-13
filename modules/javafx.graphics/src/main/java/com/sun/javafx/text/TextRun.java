@@ -289,7 +289,7 @@ public class TextRun implements GlyphList {
             float runWidth = positions[glyphCount<<1];
             while (runWidth > width) {
                 float glyphWidth = positions[(gi+1)<<1] - positions[gi<<1];
-                if (runWidth - glyphWidth <= width) {
+                if (runWidth - glyphWidth <= width || (gi+2)<<1 >= positions.length) {
                     return getCharOffset(gi);
                 }
                 runWidth -= glyphWidth;
