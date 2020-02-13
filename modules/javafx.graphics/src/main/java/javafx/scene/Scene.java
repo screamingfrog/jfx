@@ -2677,6 +2677,9 @@ public class Scene implements EventTarget {
                     : yMultiplier;
 
             if (eventType == ScrollEvent.SCROLL_FINISHED) {
+                if (scrollGesture == null || scrollGesture.sceneCoords == null) {
+                    return;
+                }
                 x = scrollGesture.sceneCoords.getX();
                 y = scrollGesture.sceneCoords.getY();
                 screenX = scrollGesture.screenCoords.getX();
@@ -2716,6 +2719,9 @@ public class Scene implements EventTarget {
                 boolean _direct, boolean _inertia) {
 
             if (eventType == ZoomEvent.ZOOM_FINISHED) {
+                if (zoomGesture == null || zoomGesture.sceneCoords == null) {
+                    return;
+                }
                 x = zoomGesture.sceneCoords.getX();
                 y = zoomGesture.sceneCoords.getY();
                 screenX = zoomGesture.screenCoords.getX();
@@ -2750,6 +2756,9 @@ public class Scene implements EventTarget {
                 boolean _direct, boolean _inertia) {
 
             if (eventType == RotateEvent.ROTATION_FINISHED) {
+                if (rotateGesture == null || rotateGesture.sceneCoords == null) {
+                    return;
+                }
                 x = rotateGesture.sceneCoords.getX();
                 y = rotateGesture.sceneCoords.getY();
                 screenX = rotateGesture.screenCoords.getX();
