@@ -1790,8 +1790,11 @@ final class MacAccessible extends Accessible {
         if (result == null) return null;
         switch (attr) {
             case NSAccessibilityAttributedStringForRangeParameterizedAttribute: {
-                String text = (String)result;
-                text = text.substring(variant.int1, variant.int1 + variant.int2);
+                String text = getNSAccessibilitySubstring(result, variant);
+                if (text == null)
+                {
+                    return null;
+                }
                 List<MacVariant> styles = new ArrayList<>();
                 Font font = (Font)getAttribute(FONT);
                 if (font != null) {
@@ -1820,8 +1823,11 @@ final class MacAccessible extends Accessible {
                 return attrString;
             }
             case NSAccessibilityStringForRangeParameterizedAttribute: {
-                String text = (String)result;
-                result = text.substring(variant.int1, variant.int1 + variant.int2);
+                result = getNSAccessibilitySubstring(result, variant);
+                if (result == null)
+                {
+                    return null;
+                }
                 break;
             }
             case NSAccessibilityCellForColumnAndRowParameterizedAttribute: {
@@ -1833,6 +1839,30 @@ final class MacAccessible extends Accessible {
         return attr.map.apply(result);
     }
 
+    private String getNSAccessibilitySubstring(
+        Object result,
+        MacVariant variant)
+    {
+        String subStr = null;
+
+        final int beginIndex = variant.int1;
+        final int endIndex = variant.int1 + variant.int2;
+        final int subLen = endIndex - beginIndex;
+        
+        String text = (String)result;
+        boolean invalid = beginIndex < 0 || endIndex > text.length() || subLen < 0;
+        if (!invalid)
+        {            
+            subStr = text.substring(beginIndex, endIndex);
+        }
+        else
+        {
+            System.out.println("MacAccessible.getNSAccessibilitySubstring error, str '" 
+                    + text + "', " + variant);
+        }
+        return subStr;
+    }
+    
     private long[] accessibilityActionNames() {
         if (getView() != null) return null; /* Let NSView answer for the Scene */
         AccessibleRole role = (AccessibleRole)getAttribute(ROLE);
