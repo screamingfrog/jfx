@@ -73,7 +73,7 @@ public class SliderSkin extends SkinBase<Slider> {
     private double thumbTop;
     private double thumbLeft;
     private double preDragThumbPos;
-    private Point2D dragStart; // in skin coordinates
+    private Point2D dragStart = new Point2D(0, 0); // in skin coordinates
 
     private StackPane thumb;
     private StackPane track;
