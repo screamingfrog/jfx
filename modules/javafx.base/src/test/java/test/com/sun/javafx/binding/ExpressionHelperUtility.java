@@ -26,9 +26,12 @@
 package test.com.sun.javafx.binding;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
@@ -109,21 +112,21 @@ public class ExpressionHelperUtility {
         try {
             final Class clazz = Class.forName(LIST_EXPRESSION_HELPER_GENERIC);
             if (clazz.isAssignableFrom(helperClass)) {
-                return getInvalidationListenerFromGenericClass(clazz, helper);
+                return getCollectionsInvalidationListenerFromGenericClass(clazz, helper);
             }
         } catch (ClassNotFoundException ex) { }
 
         try {
             final Class clazz = Class.forName(MAP_EXPRESSION_HELPER_GENERIC);
             if (clazz.isAssignableFrom(helperClass)) {
-                return getInvalidationListenerFromGenericClass(clazz, helper);
+                return getCollectionsInvalidationListenerFromGenericClass(clazz, helper);
             }
         } catch (ClassNotFoundException ex) { }
 
         try {
             final Class clazz = Class.forName(SET_EXPRESSION_HELPER_GENERIC);
             if (clazz.isAssignableFrom(helperClass)) {
-                return getInvalidationListenerFromGenericClass(clazz, helper);
+                return getCollectionsInvalidationListenerFromGenericClass(clazz, helper);
             }
         } catch (ClassNotFoundException ex) { }
 
@@ -177,21 +180,21 @@ public class ExpressionHelperUtility {
         try {
             final Class clazz = Class.forName(LIST_EXPRESSION_HELPER_GENERIC);
             if (clazz.isAssignableFrom(helperClass)) {
-                return getChangeListenerFromGenericClass(clazz, helper);
+                return getCollectionsChangeListenerFromGenericClass(clazz, helper);
             }
         } catch (ClassNotFoundException ex) { }
 
         try {
             final Class clazz = Class.forName(MAP_EXPRESSION_HELPER_GENERIC);
             if (clazz.isAssignableFrom(helperClass)) {
-                return getChangeListenerFromGenericClass(clazz, helper);
+                return getCollectionsChangeListenerFromGenericClass(clazz, helper);
             }
         } catch (ClassNotFoundException ex) { }
 
         try {
             final Class clazz = Class.forName(SET_EXPRESSION_HELPER_GENERIC);
             if (clazz.isAssignableFrom(helperClass)) {
-                return getChangeListenerFromGenericClass(clazz, helper);
+                return getCollectionsChangeListenerFromGenericClass(clazz, helper);
             }
         } catch (ClassNotFoundException ex) { }
 
@@ -338,7 +341,7 @@ public class ExpressionHelperUtility {
         return Collections.emptyList();
     }
 
-    private static List<InvalidationListener> getInvalidationListenerFromGenericClass(Class clazz, Object helper) {
+    private static List<InvalidationListener> getCollectionsInvalidationListenerFromGenericClass(Class clazz, Object helper) {
         try {
             final Field field = clazz.getDeclaredField("invalidationListeners");
             field.setAccessible(true);
@@ -363,7 +366,7 @@ public class ExpressionHelperUtility {
         return Collections.emptyList();
     }
 
-    private static <T> List<ChangeListener<? super T>> getChangeListenerFromGenericClass(Class clazz, Object helper) {
+    private static <T> List<ChangeListener<? super T>> getCollectionsChangeListenerFromGenericClass(Class clazz, Object helper) {
         try {
             final Field field = clazz.getDeclaredField("changeListeners");
             field.setAccessible(true);
@@ -373,6 +376,34 @@ public class ExpressionHelperUtility {
                 sizeField.setAccessible(true);
                 final int size = sizeField.getInt(helper);
                 return Arrays.asList(Arrays.copyOf(listeners, size));
+            }
+        } catch (Exception ex) { }
+        return Collections.emptyList();
+    }
+
+    private static <T> List<ChangeListener<? super T>> getChangeListenerFromGenericClass(Class clazz, Object helper) {
+        try {
+            final Field field = clazz.getDeclaredField("changeListeners");
+            field.setAccessible(true);
+            final Set<ChangeListener<? super T>> listeners = (Set<ChangeListener<? super T>>)field.get(helper);
+            if (listeners != null) {
+                final ArrayList<ChangeListener<? super T>> list = new ArrayList<>();
+                list.addAll(listeners);
+                return list;
+            }
+        } catch (Exception ex) { }
+        return Collections.emptyList();
+    }
+
+    private static List<InvalidationListener> getInvalidationListenerFromGenericClass(Class clazz, Object helper) {
+        try {
+            final Field field = clazz.getDeclaredField("invalidationListeners");
+            field.setAccessible(true);
+            final Set<InvalidationListener> listeners = (Set<InvalidationListener>)field.get(helper);
+            if (listeners != null) {
+                final ArrayList<InvalidationListener> list = new ArrayList<>();
+                list.addAll(listeners);
+                return list;
             }
         } catch (Exception ex) { }
         return Collections.emptyList();
