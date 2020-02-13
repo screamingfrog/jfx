@@ -148,6 +148,34 @@ public final class Screen {
             (screen.outputScaleX != outScaleX) ||
             (screen.outputScaleY != outScaleY))
         {
+            System.out.println(
+                String.format("Screen changed: Bounds: [%d %d %d %d], Visible Bounds: [%d %d %d %d]",
+                    width, height, minX, minY, visualWidth, visualHeight, visualMinX, visualMinY));
+
+            if (width < 0)
+            {
+                System.out.println("Clamping width to 0");
+                width = Math.max(0, width);
+            }
+
+            if (height < 0)
+            {
+                System.out.println("Clamping height to 0");
+                height = Math.max(0, height);
+            }
+
+            if (visualWidth < 0)
+            {
+                System.out.println("Clamping visualWidth to 0");
+                visualWidth = Math.max(0, visualWidth);
+            }
+
+            if (visualHeight < 0)
+            {
+                System.out.println("Clamping visualHeight to 0");
+                visualHeight = Math.max(0, visualHeight);
+            }
+
             Screen s = new Screen();
             s.bounds = new Rectangle2D(minX, minY, width, height);
             s.visualBounds = new Rectangle2D(visualMinX, visualMinY, visualWidth, visualHeight);
