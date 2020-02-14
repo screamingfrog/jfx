@@ -26,8 +26,9 @@
 package com.sun.javafx.binding;
 
 import java.util.Iterator;
-import java.util.Set;
+import java.util.Map;
 import java.util.function.Predicate;
+
 import javafx.beans.WeakListener;
 
 public class ExpressionHelperBase {
@@ -57,18 +58,19 @@ public class ExpressionHelperBase {
         return size;
     }
 
-    protected static void removeWeakListeners(final Set<?> listeners) {
+    protected static void removeWeakListeners(final Map<?, Integer> listeners) {
         Predicate<Object> p = t -> t instanceof WeakListener &&
                 ((WeakListener)t).wasGarbageCollected();
 
-        final Iterator<?> i = listeners.iterator();
-        while (i.hasNext()) {
-            Object listener = i.next();
-            if (p.test(listener)) {
-                i.remove();
-                listener = null;
-            }
-        }
+        listeners.entrySet().removeIf(e -> p.test(e.getKey()));
+        // final Iterator<?> i = listeners.values().iterator();
+        // while (i.hasNext()) {
+        //     Object listener = i.next();
+        //     if (p.test(listener)) {
+        //         i.remove();
+        //         listener = null;
+        //     }
+        // }
     }
 
 }

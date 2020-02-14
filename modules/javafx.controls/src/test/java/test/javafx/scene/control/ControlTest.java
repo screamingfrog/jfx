@@ -1046,6 +1046,7 @@ public class ControlTest {
                     } else if (defaultValue != null && defaultValue.getClass().isArray()) {
                         assertTrue(what, Arrays.equals((Object[])defaultValue, (Object[])initialValue));
                     } else {
+                        System.out.println("what " + what + ", defaultValue:" + defaultValue + ", initialValue:"  + initialValue);
                         assertEquals(what, defaultValue, initialValue);
                     }
 
@@ -1088,7 +1089,7 @@ public class ControlTest {
 
     private static void recursiveCheck(File directory, int pathLength) {
         if (directory.isDirectory()) {
-//            System.out.println(directory.getPath());
+            System.out.println(directory.getPath());
             checkDirectory(directory, pathLength);
 
             for (File subFile : directory.listFiles()) {

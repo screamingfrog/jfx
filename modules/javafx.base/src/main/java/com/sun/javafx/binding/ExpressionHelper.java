@@ -25,7 +25,9 @@
 
 package com.sun.javafx.binding;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javafx.beans.InvalidationListener;
@@ -189,29 +191,29 @@ public abstract class ExpressionHelper<T> extends ExpressionHelperBase {
 
     private static class Generic<T> extends ExpressionHelper<T> {
 
-        private Set<InvalidationListener> invalidationListeners = new LinkedHashSet<>();
-        private Set<ChangeListener<? super T>> changeListeners = new LinkedHashSet<>();
+        private Map<InvalidationListener, Integer> invalidationListeners = new LinkedHashMap<>();
+        private Map<ChangeListener<? super T>, Integer> changeListeners = new LinkedHashMap<>();
         private T currentValue;
         private int weakChangeListenerGcCount = 2;
         private int weakInvalidationListenerGcCount = 2;
 
         private Generic(ObservableValue<T> observable, InvalidationListener listener0, InvalidationListener listener1) {
             super(observable);
-            this.invalidationListeners.add(listener0);
-            this.invalidationListeners.add(listener1);
+            this.invalidationListeners.put(listener0, 1);
+            this.invalidationListeners.merge(listener1, 1, Integer::sum);
         }
 
         private Generic(ObservableValue<T> observable, ChangeListener<? super T> listener0, ChangeListener<? super T> listener1) {
             super(observable);
-            this.changeListeners.add(listener0);
-            this.changeListeners.add(listener1);
+            this.changeListeners.put(listener0, 1);
+            this.changeListeners.merge(listener1, 1, Integer::sum);
             this.currentValue = observable.getValue();
         }
 
         private Generic(ObservableValue<T> observable, InvalidationListener invalidationListener, ChangeListener<? super T> changeListener) {
             super(observable);
-            this.invalidationListeners.add(invalidationListener);
-            this.changeListeners.add(changeListener);
+            this.invalidationListeners.put(invalidationListener, 1);
+            this.changeListeners.put(changeListener, 1);
             this.currentValue = observable.getValue();
         }
 
@@ -223,17 +225,20 @@ public abstract class ExpressionHelper<T> extends ExpressionHelperBase {
                     weakInvalidationListenerGcCount = (weakInvalidationListenerGcCount * 3)/2 + 1;
                 }
             }
-            invalidationListeners.add(listener);
+            invalidationListeners.merge(listener, 1, Integer::sum);
             return this;
         }
 
         @Override
         protected ExpressionHelper<T> removeListener(InvalidationListener listener) {
-            if (invalidationListeners.remove(listener)) {
-                if (invalidationListeners.isEmpty() && changeListeners.size() == 1) {
-                    return new SingleChange<T>(observable, changeListeners.iterator().next());
-                } else if ((invalidationListeners.size() == 1) && changeListeners.isEmpty()) {
-                    return new SingleInvalidation<T>(observable, invalidationListeners.iterator().next());
+            if (invalidationListeners.containsKey(listener)) {
+                if (invalidationListeners.merge(listener, -1, Integer::sum) == 0) {
+                    invalidationListeners.remove(listener);
+                    if (invalidationListeners.isEmpty() && changeListeners.size() == 1) {
+                        return new SingleChange<T>(observable, changeListeners.keySet().iterator().next());
+                    } else if ((invalidationListeners.size() == 1) && changeListeners.isEmpty()) {
+                        return new SingleInvalidation<T>(observable, invalidationListeners.keySet().iterator().next());
+                    }
                 }
             }
             return this;
@@ -247,8 +252,7 @@ public abstract class ExpressionHelper<T> extends ExpressionHelperBase {
                     weakChangeListenerGcCount = (weakChangeListenerGcCount * 3)/2 + 1;
                 }
             }
-            changeListeners.add(listener);
-
+            changeListeners.merge(listener, 1, Integer::sum);
             if (changeListeners.size() == 1) {
                 currentValue = observable.getValue();
             }
@@ -257,11 +261,14 @@ public abstract class ExpressionHelper<T> extends ExpressionHelperBase {
 
         @Override
         protected ExpressionHelper<T> removeListener(ChangeListener<? super T> listener) {
-            if (changeListeners.remove(listener)) {
-                if (changeListeners.isEmpty() && invalidationListeners.size() == 1) {
-                    return new SingleInvalidation<T>(observable, invalidationListeners.iterator().next());
-                } else if ((changeListeners.size() == 1) && invalidationListeners.isEmpty()) {
-                    return new SingleChange<T>(observable, changeListeners.iterator().next());
+            if (changeListeners.containsKey(listener)) {
+                if (changeListeners.merge(listener, -1, Integer::sum) == 0) {
+                    changeListeners.remove(listener);
+                    if (changeListeners.isEmpty() && invalidationListeners.size() == 1) {
+                        return new SingleInvalidation<T>(observable, invalidationListeners.keySet().iterator().next());
+                    } else if ((changeListeners.size() == 1) && invalidationListeners.isEmpty()) {
+                        return new SingleChange<T>(observable, changeListeners.keySet().iterator().next());
+                    }
                 }
             }
             return this;
@@ -269,12 +276,16 @@ public abstract class ExpressionHelper<T> extends ExpressionHelperBase {
 
         @Override
         protected void fireValueChangedEvent() {
-            final Set<InvalidationListener> curInvalidationList = new LinkedHashSet<>(invalidationListeners);
-            final Set<ChangeListener<? super T>> curChangeList = new LinkedHashSet<>(changeListeners);
+            final Map<InvalidationListener, Integer> curInvalidationList = new LinkedHashMap<>(invalidationListeners);
+            final Map<ChangeListener<? super T>, Integer> curChangeList = new LinkedHashMap<>(changeListeners);
 
-            curInvalidationList.forEach(listener -> {
+            curInvalidationList.entrySet().forEach(entry -> {
+                final InvalidationListener listener = entry.getKey();
+                final int registrationCount = entry.getValue();
                 try {
-                    listener.invalidated(observable);
+                    for (int i = 0; i < registrationCount; i++) {
+                        listener.invalidated(observable);
+                    }
                 } catch (Exception e) {
                     Thread.currentThread().getUncaughtExceptionHandler().uncaughtException(
                         Thread.currentThread(), e);
@@ -285,9 +296,13 @@ public abstract class ExpressionHelper<T> extends ExpressionHelperBase {
                 currentValue = observable.getValue();
                 final boolean changed = (currentValue == null)? (oldValue != null) : !currentValue.equals(oldValue);
                 if (changed) {
-                    curChangeList.forEach(listener -> {
+                    curChangeList.entrySet().forEach(entry -> {
+                        final ChangeListener<? super T> listener = entry.getKey();
+                        final int registrationCount = entry.getValue();
                         try {
-                            listener.changed(observable, oldValue, currentValue);
+                            for (int i  = 0; i < registrationCount; i++) {
+                                listener.changed(observable, oldValue, currentValue);
+                            }
                         } catch (Exception e) {
                             Thread.currentThread().getUncaughtExceptionHandler().uncaughtException(
                                 Thread.currentThread(), e);

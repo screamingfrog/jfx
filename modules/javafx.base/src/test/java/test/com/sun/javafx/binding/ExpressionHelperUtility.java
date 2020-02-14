@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javafx.beans.InvalidationListener;
@@ -385,10 +386,10 @@ public class ExpressionHelperUtility {
         try {
             final Field field = clazz.getDeclaredField("changeListeners");
             field.setAccessible(true);
-            final Set<ChangeListener<? super T>> listeners = (Set<ChangeListener<? super T>>)field.get(helper);
+            final Map<ChangeListener<? super T>, Integer> listeners = (Map<ChangeListener<? super T>, Integer>)field.get(helper);
             if (listeners != null) {
                 final ArrayList<ChangeListener<? super T>> list = new ArrayList<>();
-                list.addAll(listeners);
+                list.addAll(listeners.keySet());
                 return list;
             }
         } catch (Exception ex) { }
@@ -399,10 +400,10 @@ public class ExpressionHelperUtility {
         try {
             final Field field = clazz.getDeclaredField("invalidationListeners");
             field.setAccessible(true);
-            final Set<InvalidationListener> listeners = (Set<InvalidationListener>)field.get(helper);
+            final Map<InvalidationListener, Integer> listeners = (Map<InvalidationListener, Integer>)field.get(helper);
             if (listeners != null) {
                 final ArrayList<InvalidationListener> list = new ArrayList<>();
-                list.addAll(listeners);
+                list.addAll(listeners.keySet());
                 return list;
             }
         } catch (Exception ex) { }
