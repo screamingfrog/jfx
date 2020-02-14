@@ -1066,14 +1066,14 @@ public class ComboBoxTest {
 
         StageLoader sl = new StageLoader(comboBox);
 
-        final double widthBefore = comboBox.getWidth();
-
         // add item
         comboBox.getItems().add("Option 1");
 
         // open and close combobox
         comboBox.show();
         comboBox.hide();
+
+        final double widthBefore = comboBox.getWidth();
 
         // set a placeholder
         comboBox.setPlaceholder(new Circle(12, Color.RED));
