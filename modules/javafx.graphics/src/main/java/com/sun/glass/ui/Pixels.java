@@ -183,6 +183,19 @@ public abstract class Pixels {
     }
 
     /*
+     * Return the original pixels buffer without rewinding it.
+     */
+    public final Buffer getBuffer() {
+        if (this.bytes != null) {
+            return this.bytes;
+        } else if (this.ints != null) {
+            return this.ints;
+        } else {
+            throw new RuntimeException("Unexpected Pixels state.");
+        }
+    }
+
+    /*
      * Return a copy of pixels as bytes.
      */
     public final ByteBuffer asByteBuffer() {
