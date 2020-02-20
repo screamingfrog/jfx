@@ -32,6 +32,7 @@ if (!LINUX.canBuild) return;
 // All desktop related packages should be built
 LINUX.compileSwing = true;
 LINUX.compileSWT = true;
+LINUX.includeMonocle = true;
 
 // Libraries end up in the lib/$OS_ARCH directory for Linux
 LINUX.libDest = "lib"

@@ -30,6 +30,7 @@ if (!WIN.canBuild) return;
 
 WIN.compileSwing = true;
 WIN.compileSWT = true;
+WIN.includeMonocle = true;
 
 WIN.includeNull3d = true
 
