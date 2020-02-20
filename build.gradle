@@ -1534,6 +1534,10 @@ void addJSL(Project project, String name, String pkg, List<String> addExports, C
 
 void addMavenPublication(Project project, List<String> projectDependencies) {
     project.apply plugin: 'maven-publish'
+    project.apply plugin: 'java'
+    project.java {
+        withSourcesJar()
+    }
 
     project.group = MAVEN_GROUP_ID
     project.version = MAVEN_VERSION
@@ -1584,6 +1588,7 @@ void addMavenPublication(Project project, List<String> projectDependencies) {
             publications {
                 maven(MavenPublication) {
                     artifactId = "javafx-${project.name}"
+                    from project.components.java
 
                     afterEvaluate {
                         artifact project.tasks."moduleEmptyPublicationJar$t.capital"
@@ -1598,7 +1603,14 @@ void addMavenPublication(Project project, List<String> projectDependencies) {
                         parent.appendNode("artifactId", "javafx")
                         parent.appendNode("version", MAVEN_VERSION)
 
-                        Node dependencies = asNode().appendNode("dependencies")
+                        // remove the compile scope dependencies entries gradle seems to insert
+                        // when using withSourcesJar to publish java sources
+                        def root = asNode()
+                        root.dependencies.children.each { node -> root.dependencies.remove(node) }
+                        Node dependencies = root.dependencies[0]
+                        if (dependencies == null) {
+                            dependencies = root.appendNode("dependencies")
+                        }
 
                         Node projectDependencyPlatform = dependencies.appendNode("dependency")
                         projectDependencyPlatform.appendNode("groupId", MAVEN_GROUP_ID)
