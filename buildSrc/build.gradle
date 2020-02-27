@@ -60,7 +60,10 @@ repositories {
     if (buildClosed) {
         ivy {
             url jfxRepositoryURL
-            layout "pattern", {
+            metadataSources {
+                    artifact()
+                }
+                patternLayout {
                 artifact "[artifact]-[revision].[ext]"
                 artifact "[artifact].[ext]"
             }

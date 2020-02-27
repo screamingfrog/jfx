@@ -1512,6 +1512,10 @@ void addJSL(Project project, String name, String pkg, List<String> addExports, C
 
 void addMavenPublication(Project project, List<String> projectDependencies) {
     project.apply plugin: 'maven-publish'
+    project.apply plugin: 'java'
+    project.java {
+        withSourcesJar()
+    }
 
     project.group = MAVEN_GROUP_ID
     project.version = MAVEN_VERSION
@@ -1562,10 +1566,13 @@ void addMavenPublication(Project project, List<String> projectDependencies) {
             publications {
                 maven(MavenPublication) {
                     artifactId = "javafx-${project.name}"
+                    from project.components.java
 
-                    artifact project.tasks."moduleEmptyPublicationJar$t.capital"
-                    artifact project.tasks."modularPublicationJar$t.capital" {
-                        classifier "$t.name"
+                    afterEvaluate {
+                        artifact project.tasks."moduleEmptyPublicationJar$t.capital"
+                        artifact project.tasks."modularPublicationJar$t.capital" {
+                            classifier "$t.name"
+                        }
                     }
 
                     pom.withXml {
@@ -1717,7 +1724,10 @@ allprojects {
         repositories {
             ivy {
                 url JFX_DEPS_URL
-                layout "pattern", {
+                metadataSources {
+                    artifact()
+                }
+                patternLayout {
                     artifact "[artifact]-[revision](-[classifier]).[ext]"
                     artifact "[artifact].[ext]"
                 }
@@ -1730,7 +1740,10 @@ allprojects {
             mavenCentral()
             ivy {
                 url "http://download.eclipse.org/eclipse/updates/4.6/R-4.6.3-201703010400/plugins/"
-                layout "pattern", {
+                metadataSources {
+                    artifact()
+                }
+                patternLayout {
                     artifact "[artifact].[ext]"
                 }
             }
@@ -1741,13 +1754,19 @@ allprojects {
         repositories {
             ivy {
                 url libAVRepositoryURL
-                layout "pattern", {
+                metadataSources {
+                    artifact()
+                }
+                patternLayout {
                     artifact "[artifact].[ext]"
                 }
             }
             ivy {
                 url FFmpegRepositoryURL
-                layout "pattern", {
+                metadataSources {
+                    artifact()
+                }
+                patternLayout {
                     artifact "[artifact].[ext]"
                 }
             }
@@ -3581,6 +3600,7 @@ allprojects {
         project.jar.enabled = false
 
         // and redirect the resources into the module
+        project.sourceSets.main.output.resourcesDir = project.moduleDir
         project.processResources.destinationDir = project.moduleDir
     }
 
@@ -3614,6 +3634,7 @@ allprojects {
         project.sourceSets.shims.resources.srcDirs += project.sourceSets.main.resources.srcDirs
 
         // and redirect the resources into the module
+        project.sourceSets.shims.output.resourcesDir = project.moduleShimsDir
         project.processShimsResources.destinationDir = project.moduleShimsDir
 
        compileTestJava.dependsOn(copyGeneratedShimsTask)
@@ -3868,6 +3889,7 @@ compileTargets { t ->
         enabled = COMPILE_SWT
         group = "Basic"
         description = "Creates the javafx-swt.jar for the $t.name target"
+        destinationDir = file("${project(":swt").buildDir}/libs")
         archiveName = "${project(":swt").buildDir}/libs/javafx-swt.jar";
         includeEmptyDirs = false
         from("${project(":swt").buildDir}/classes/java/main");
