@@ -94,6 +94,14 @@ public class TableCellSkin<S,T> extends TableCellSkinBase<S, T, TableCell<S,T>> 
 
     /** {@inheritDoc} */
     @Override public ReadOnlyObjectProperty<TableColumn<S,T>> tableColumnProperty() {
-        return getSkinnable().tableColumnProperty();
+        final TableCell<S, T> skinnable = getSkinnable();
+        if (skinnable != null)
+        {
+            return skinnable.tableColumnProperty();
+        }
+        else
+        {
+            return null;
+        }
     }
 }

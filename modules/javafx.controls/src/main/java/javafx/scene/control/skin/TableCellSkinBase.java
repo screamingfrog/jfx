@@ -120,7 +120,15 @@ public abstract class TableCellSkinBase<S, T, C extends IndexedCell<T>> extends 
      */
     public abstract ReadOnlyObjectProperty<? extends TableColumnBase<S,T>> tableColumnProperty();
     public final TableColumnBase<S,T> getTableColumn() {
-        return tableColumnProperty().get();
+        final ReadOnlyObjectProperty<? extends TableColumnBase<S, T>> property = tableColumnProperty();
+        if (property != null)
+        {
+            return property.get();
+        }
+        else
+        {
+            return null;
+        }
     }
 
 
