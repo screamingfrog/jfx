@@ -1014,6 +1014,7 @@ public abstract class Parent extends Node {
     }
 
     @Override public double prefWidth(double height) {
+        clearSizeCache();
         if (height == -1) {
             if (prefWidthCache == -1) {
                 prefWidthCache = computePrefWidth(-1);
@@ -1028,6 +1029,7 @@ public abstract class Parent extends Node {
     }
 
     @Override public double prefHeight(double width) {
+        clearSizeCache();
         if (width == -1) {
             if (prefHeightCache == -1) {
                 prefHeightCache = computePrefHeight(-1);
