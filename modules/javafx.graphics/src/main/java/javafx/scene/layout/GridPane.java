@@ -1400,10 +1400,9 @@ public class GridPane extends Pane {
     private CompositeSize computePrefHeights(double[] widths) {
         CompositeSize result;
         if (widths == null) {
-            // Hack to force re-computation every time
-            // if (rowPrefHeight != null) {
-            //     return rowPrefHeight;
-            // }
+            if (rowPrefHeight != null) {
+                return rowPrefHeight;
+            }
             rowPrefHeight = createCompositeRows(0);
             result = rowPrefHeight;
         } else {
@@ -1533,10 +1532,9 @@ public class GridPane extends Pane {
     private CompositeSize computePrefWidths(double[] heights) {
         CompositeSize result;
         if (heights == null) {
-            // Hack to force re-computation every time
-            // if (columnPrefWidth != null) {
-            //     return columnPrefWidth;
-            // }
+            if (columnPrefWidth != null) {
+                return columnPrefWidth;
+            }
             columnPrefWidth = createCompositeColumns(0);
             result = columnPrefWidth;
         } else {
