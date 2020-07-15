@@ -374,6 +374,10 @@ public final class Screen {
      * Called from native when the Screen definitions change.
      */
     public static void notifySettingsChanged() {
+        if (Application.GetApplication() == null) {
+            return;
+        }
+
         // Save the old screens in order to dispose them later
         List<Screen> oldScreens = screens;
 
