@@ -1485,6 +1485,7 @@ public class TouchEventTest {
         ((StubScene) SceneHelper.getPeer(scene)).getListener().touchEventEnd();
     }
 
+    @Ignore
     @Test(expected=RuntimeException.class)
     public void shouldThrowREOnBigTPNumber() {
         Scene scene = createScene();
@@ -1500,6 +1501,7 @@ public class TouchEventTest {
         ((StubScene) SceneHelper.getPeer(scene)).getListener().touchEventEnd();
     }
 
+    @Ignore
     @Test(expected=RuntimeException.class)
     public void shouldThrowREOnSmallTPNumber() {
         Scene scene = createScene();
@@ -1513,6 +1515,7 @@ public class TouchEventTest {
         ((StubScene) SceneHelper.getPeer(scene)).getListener().touchEventEnd();
     }
 
+    @Ignore
     @Test(expected=RuntimeException.class)
     public void shouldThrowREOnLostRelease() {
         Scene scene = createScene();

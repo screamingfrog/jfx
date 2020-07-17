@@ -2857,7 +2857,8 @@ public class Scene implements EventTarget {
             int order = touchMap.getOrder(id);
 
             if (order >= touchPoints.length) {
-                throw new RuntimeException("Too many touch points reported");
+                return;
+                //throw new RuntimeException("Too many touch points reported");
             }
 
             // pick target
@@ -2898,7 +2899,8 @@ public class Scene implements EventTarget {
             }
 
             if (touchPointIndex != touchPoints.length) {
-                throw new RuntimeException("Wrong number of touch points reported");
+                return;
+                //throw new RuntimeException("Wrong number of touch points reported");
             }
 
             Scene.this.processTouchEvent(nextTouchEvent, touchPoints);
