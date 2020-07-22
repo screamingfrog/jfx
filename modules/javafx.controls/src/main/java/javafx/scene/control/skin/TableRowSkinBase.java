@@ -711,8 +711,10 @@ public abstract class TableRowSkinBase<T,
                 R cell = cellRef.get();
                 if (cell != null) {
                     cell.updateIndex(-1);
-                    cell.getSkin().dispose();
-                    cell.setSkin(null);
+                    if (cell.getSkin() != null) {
+                        cell.getSkin().dispose();
+                        cell.setSkin(null);
+                    }
                 }
             }
             cellsMap.clear();
