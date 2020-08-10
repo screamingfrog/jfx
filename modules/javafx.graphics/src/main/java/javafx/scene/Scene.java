@@ -70,6 +70,7 @@ import javafx.css.CssMetaData;
 import javafx.css.StyleableObjectProperty;
 import javafx.event.*;
 import javafx.geometry.*;
+import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.*;
 import javafx.scene.paint.Color;
@@ -1381,7 +1382,22 @@ public class Scene implements EventTarget {
         context.platformImage = accessor.getTkImageLoader(tileImg);
         setAllowPGAccess(false);
         Object tkImage = tk.renderToImage(context);
-        accessor.loadTkImage(tileImg, tkImage);
+        if (tkImage != null)
+        {
+            accessor.loadTkImage(tileImg, tkImage);
+        }
+        else
+        {
+            // Fall back to a transluscent box.
+            final PixelWriter pixelWriter = tileImg.getPixelWriter();
+            for (int xCoord = 0; xCoord < w; xCoord++)
+            {
+                for (int yCoord = 0; yCoord < h; yCoord++)
+                {
+                    pixelWriter.setColor(xCoord, yCoord, Color.grayRgb(75, 0.90));
+                }
+            }
+        }
 
         if (camera != null) {
             setAllowPGAccess(true);
